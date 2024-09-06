@@ -1,0 +1,104 @@
+-- LocalScript in StarterPlayerScripts
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 160, 0, 100)
+frame.Position = UDim2.new(0, 10, 0.5, -50)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderSizePixel = 0
+frame.Visible = true -- Make the panel visible from the start
+frame.Parent = screenGui
+
+local function createButton(position, size, color, text)
+	local button = Instance.new("TextButton")
+	button.Size = size
+	button.Position = position
+	button.Text = text
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.BackgroundColor3 = color
+	button.BorderSizePixel = 0
+	button.Parent = frame
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = button
+
+	return button
+end
+
+local heightUpButton = createButton(UDim2.new(0, 10, 0, 10), UDim2.new(0, 60, 0, 40), Color3.fromRGB(255, 105, 180), "Up") -- Pink
+local heightDownButton = createButton(UDim2.new(0, 10, 0, 50), UDim2.new(0, 60, 0, 40), Color3.fromRGB(0, 191, 255), "Down") -- Blue
+local speedUpButton = createButton(UDim2.new(0, 90, 0, 10), UDim2.new(0, 60, 0, 40), Color3.fromRGB(255, 0, 0), "+") -- Red
+local speedDownButton = createButton(UDim2.new(0, 90, 0, 50), UDim2.new(0, 60, 0, 40), Color3.fromRGB(0, 255, 0), "-") -- Green
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 20, 0, 20)
+toggleButton.Position = UDim2.new(0, 10, 0.5, -10) -- Position in the left center of the screen
+toggleButton.Text = ""
+toggleButton.BackgroundColor3 = Color3.fromRGB(128, 128, 128)
+toggleButton.BorderSizePixel = 0
+toggleButton.Parent = screenGui -- Parent is now the ScreenGui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 10)
+toggleCorner.Parent = toggleButton
+
+local currentHeightLevel = 0.4
+local currentSpeedLevel = 0
+
+local heightIncrement = 5 -- studs per level
+local speedMultiplier = 1.5 -- multiplier per level
+
+local maxLevel = 5
+
+local function updateHeight()
+	local newHeight = currentHeightLevel * heightIncrement
+	humanoid.HipHeight = newHeight
+end
+
+local function updateSpeed()
+	local newSpeed = 16 * (1 + (currentSpeedLevel * (speedMultiplier - 1)))
+	humanoid.WalkSpeed = newSpeed
+end
+
+heightUpButton.MouseButton1Click:Connect(function()
+	if currentHeightLevel < maxLevel then
+		currentHeightLevel = currentHeightLevel + 1
+		updateHeight()
+	end
+end)
+
+heightDownButton.MouseButton1Click:Connect(function()
+	if currentHeightLevel > 0 then
+		currentHeightLevel = currentHeightLevel - 1
+		updateHeight()
+	end
+end)
+
+speedUpButton.MouseButton1Click:Connect(function()
+	if currentSpeedLevel < maxLevel then
+		currentSpeedLevel = currentSpeedLevel + 1
+		updateSpeed()
+	end
+end)
+
+speedDownButton.MouseButton1Click:Connect(function()
+	if currentSpeedLevel > 0 then
+		currentSpeedLevel = currentSpeedLevel - 1
+		updateSpeed()
+	end
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+end)
+
+-- Initialize defaults
+updateHeight()
+updateSpeed()
